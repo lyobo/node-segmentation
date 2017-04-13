@@ -1,0 +1,15 @@
+totalColumn = 30
+aggregation = 1
+year = 2
+month = 3
+day = 4
+hour = 5
+minute = 6
+second = 7
+data_start = 8
+data_end = 25
+44column = 26
+node =  27
+unknown_1 = 28
+unknown_2 = 29
+time_convertion = 30
