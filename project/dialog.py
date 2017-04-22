@@ -11,7 +11,8 @@ import xlwt
 import numpy as np
 import datetime
 import dialog_window
-import selectSheet
+import selectDate
+import solar_location
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -75,7 +76,7 @@ class MainWindow(QDialog, dialog_window.Ui_Dialog):
                 self.sheettext.setText(self.str)
 
     def date_selection(self):
-        self.select = selectSheet.SelectWindow()
+        self.select = selectDate.SelectWindow()
         self.select._get_namelist(self.date_str_list)
         self.select.enable_sheet(self._select_sheets)
         self.select.show()
@@ -155,6 +156,7 @@ class MainWindow(QDialog, dialog_window.Ui_Dialog):
             combine = str(int(year)*10000 + int(month)*100 + int(day))
             time_conversion = (int(hour) - self.standard_hour)*3600 + (int(minute) - self.standard_minute)*60 + (int(second) - self.standard_second)
             time_conversion = time_conversion/self.times
+            solar_ele,solar_azi = solar_location.solar_location_cal(year,month,day,hour,minute,self.lon,self.lat)
 
             if combine in self.date_str_list:
                 date_index = self.date_str_list.index(combine)
@@ -173,6 +175,8 @@ class MainWindow(QDialog, dialog_window.Ui_Dialog):
             for i in range(self.ex_data_start,self.ex_data_end + 1):
                 table.write(row,i,data_slice[i - self.ex_data_start])
             table.write(row,self.ex_node,node_name)
+            table.write(row,self.ex_solar_ele,solar_ele)
+            table.write(row,self.ex_solar_azi,solar_azi)
             table.write(row,self.ex_time_convertion,time_conversion)
             count_list[date_index][node_index] = count_list[date_index][node_index] + 1
 
@@ -233,6 +237,10 @@ class MainWindow(QDialog, dialog_window.Ui_Dialog):
                 self.standard_second = int(split[1].strip())
             if split[0].strip().upper() == "TIMES":
                 self.times = int(split[1].strip())
+            if split[0].strip().upper() == "LON":
+                self.lon = float(split[1].strip())
+            if split[0].strip().upper() == "LAT":
+                self.lat = float(split[1].strip())
         file.close()
 
         file = open("config\\export_config.txt", "r")
@@ -264,10 +272,10 @@ class MainWindow(QDialog, dialog_window.Ui_Dialog):
                 self.ex_44column = int(split[1].strip()) - 1
             if split[0].strip().upper() == "NODE":
                 self.ex_node = int(split[1].strip()) - 1
-            if split[0].strip().upper() == "UNKNOWN_1":
-                self.ex_unknown_1 = int(split[1].strip()) - 1
-            if split[0].strip().upper() == "UNKNOWN_2":
-                self.ex_unknown_2 = int(split[1].strip()) - 1
+            if split[0].strip().upper() == "SOLAR_ELE":
+                self.ex_solar_ele = int(split[1].strip()) - 1
+            if split[0].strip().upper() == "SOLAR_AZI":
+                self.ex_solar_azi = int(split[1].strip()) - 1
             if split[0].strip().upper() == "TIME_CONVERTION":
                 self.ex_time_convertion = int(split[1].strip()) - 1
 

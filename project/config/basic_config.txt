@@ -18,3 +18,6 @@ standard_hour = 7
 standard_minute = 0
 standard_second = 0
 times = 10
+
+lon = 116.35964512825012
+lat = 39.96041193087462
